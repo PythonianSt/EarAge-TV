@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="theme-color" content="#123f31">
+  <title>อายุหูของคุณเท่าไร?</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+  <section class="hero">
+    <div class="hero-ear">👂</div>
+    <div class="hero-title">อายุหูของคุณเท่าไร?</div>
+    <div class="hero-subtitle">ฟังเสียง • ท้าทายประสาทหู • รู้ผลภายใน 2 นาที</div>
+  </section>
+
+  <section id="welcome" class="page active">
+    <div class="card">
+      <h2>🎧 ก่อนเริ่ม</h2>
+      <ol>
+        <li>ใช้หูฟังที่ครอบหรือใส่หูทั้งสองข้าง</li>
+        <li>อยู่ในบริเวณที่เงียบ</li>
+        <li>เริ่มจากระดับเสียงต่ำ แล้วปรับให้ได้ยินสบาย</li>
+        <li>ห้ามเร่งเสียงเพื่อพยายามฟังเสียงสูง</li>
+      </ol>
+    </div>
+    <div class="alert warning">⚠️ ไม่ควรทำขณะมีอาการปวดหู หูอื้อเฉียบพลัน เวียนศีรษะมาก หรือเพิ่งสัมผัสเสียงดังจัด</div>
+    <div class="privacy">🔒 ไม่บันทึกชื่อ เลขประจำตัว หรือเสียงของผู้ทดสอบ</div>
+    <button class="btn primary big" onclick="goCalibration()">🎧 เริ่มปรับระดับเสียง</button>
+    <details class="card">
+      <summary>กิจกรรมนี้ประเมินอะไร?</summary>
+      <p>กิจกรรมนี้สำรวจว่าเสียงความถี่สูงระดับใดที่ผู้เล่นยังรับรู้ผ่านอุปกรณ์และหูฟังชุดนี้ได้</p>
+      <p>ผลที่เรียกว่า “อายุหู” เป็นการประมาณเพื่อการเรียนรู้ ไม่ใช่อายุจริงของประสาทหู และไม่ใช่ผลตรวจทางการแพทย์</p>
+    </details>
+  </section>
+
+  <section id="calibration" class="page">
+    <h2>ขั้นที่ 1 — ปรับระดับเสียง</h2>
+    <div class="alert info">🔊 เปิดเสียงตัวอย่าง 1,000 Hz แล้วปรับระดับเสียงของอุปกรณ์ให้ได้ยินชัดและสบาย ไม่ต้องดัง</div>
+    <audio id="calAudio" controls preload="auto">
+      <source src="sounds/calibration_1000.wav" type="audio/wav">
+    </audio>
+    <p class="caption">กด ▶ ในเครื่องเล่นเสียง หากไม่ได้ยิน ให้ตรวจหูฟังและการเชื่อมต่อก่อน</p>
+    <label class="checkline"><input id="comfortable" type="checkbox" onchange="toggleStart()"> ฉันได้ยินเสียงตัวอย่างชัดเจนในหูทั้งสองข้าง และระดับเสียงไม่ดังเกินไป</label>
+    <div class="two">
+      <button class="btn" onclick="resetAll()">← กลับ</button>
+      <button id="startTestBtn" class="btn primary" disabled onclick="startTest()">เริ่มทดสอบ →</button>
+    </div>
+    <div class="alert danger">🛑 หลังเริ่มทดสอบ ห้ามเพิ่มระดับเสียงเพื่อไล่ตามเสียงที่ไม่ได้ยิน</div>
+  </section>
+
+  <section id="test" class="page">
+    <div class="progress"><div id="bar"></div></div>
+    <div id="progressText" class="progressText"></div>
+    <div class="tone-card">
+      <div>เสียงทดสอบลำดับที่</div>
+      <div id="toneNumber" class="tone-number"></div>
+      <div>กด ▶ แล้วตั้งใจฟังจนเสียงจบ</div>
+    </div>
+    <audio id="testAudio" controls preload="auto"></audio>
+    <details class="card compact">
+      <summary>สำหรับผู้ดูแลนิทรรศการ</summary>
+      <div id="freqAdmin"></div>
+    </details>
+    <h2>คุณได้ยินเสียงหรือไม่?</h2>
+    <div class="answers">
+      <button class="btn primary answer" onclick="answer('heard')">✅<br>ได้ยิน</button>
+      <button class="btn answer" onclick="answer('unsure')">🤔<br>ไม่แน่ใจ</button>
+      <button class="btn answer" onclick="answer('not_heard')">❌<br>ไม่ได้ยิน</button>
+    </div>
+    <p class="caption">คำตอบไม่มีถูกหรือผิด ไม่ต้องเพิ่มเสียง และไม่ต้องพยายามเดา</p>
+    <button class="btn wide" onclick="resetAll()">ยกเลิกการทดสอบ</button>
+  </section>
+
+  <section id="result" class="page">
+    <div class="progress"><div style="width:100%"></div></div>
+    <div class="progressText">ทดสอบครบแล้ว</div>
+    <div id="resultCard" class="result-card">
+      <div id="resultIcon" class="result-icon"></div>
+      <div id="resultStatus" class="result-title"></div>
+      <div class="mt">อายุหูโดยประมาณ</div>
+      <div id="resultAge" class="ear-age"></div>
+      <div id="resultSummary"></div>
+    </div>
+    <div id="highestBox" class="metric"></div>
+    <h2>คำแนะนำ</h2>
+    <div id="recommendation" class="alert"></div>
+    <details class="card">
+      <summary>ดูคำตอบทั้งหมด</summary>
+      <div id="allAnswers"></div>
+    </details>
+    <div class="card">
+      <b>สิ่งสำคัญ</b><br>
+      โทรศัพท์ หูฟัง ลำโพง การตั้งระดับเสียง และเสียงรบกวนอาจทำให้ผลเปลี่ยนไปมาก โดยเฉพาะเสียงสูงกว่า 8 kHz ผลนี้จึงไม่ใช้ยืนยันหรือปฏิเสธโรคของหู
+    </div>
+    <button class="btn primary big" onclick="resetAll()">🔄 นักศึกษาคนต่อไป</button>
+    <p class="caption">หากมีหูอื้อข้างเดียว การได้ยินลดลงเฉียบพลัน ปวดหู มีน้ำหรือหนองไหล หรือเวียนศีรษะมาก ควรพบแพทย์โดยไม่รอผลจากกิจกรรมนี้</p>
+  </section>
+
+  <footer>
+    <b>Ear Health Challenge</b><br>
+    กิจกรรมส่งเสริมความตระหนักด้านสุขภาพหูและการฟังอย่างปลอดภัย<br>
+    ไม่ใช่การตรวจ Pure-tone audiometry หรือการวินิจฉัยโรค
+  </footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
